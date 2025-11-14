@@ -16,11 +16,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Timeout configurations for proxy connections
 - --help flag support for all scripts
 - Executable permissions for scripts
+- **build-all.sh** - Unified script to build for all platforms
+- **test.sh** - Comprehensive functional tests with mock services
+- Standalone testing without external project dependencies
 
 ### Changed
 - Pinned nginx base image to specific version (1.25.3-alpine)
 - Removed hardcoded registry values from scripts
 - Fixed --load flag incompatibility in build-multiarch.sh
+- **Moved scripts from dev-proxy/scripts/ to ./scripts/**
+- Replaced test-build.sh with enhanced test.sh
+- Updated README with clear build and test instructions
 
 ### Security
 - Added security response headers to nginx configuration

@@ -61,29 +61,69 @@ Open your browser to:
 http://localhost:8080
 ```
 
-## Building Multi-Arch Images
+## Building and Testing
+
+### Build for Local Development
+
+Build for your current platform (Mac or Linux):
+
+```bash
+./scripts/build-local.sh
+```
+
+This creates `dev-proxy:latest` for immediate use.
+
+### Build for All Platforms
 
 Build for both Mac (arm64) and Linux (amd64):
 
 ```bash
-# Build and tag for current platform
-docker build -t dev-proxy:latest .
+# Local only (no registry needed)
+./scripts/build-all.sh --local-only
 
-# Build for both platforms (requires buildx)
-docker buildx build --platform linux/amd64,linux/arm64 -t dev-proxy:latest .
+# Build all + push to registry
+export DO_REGISTRY=registry.digitalocean.com/your-registry
+export DO_TOKEN=your-token-here
+./scripts/build-all.sh
 ```
 
-## Pushing to Registry
+The `build-all.sh` script will:
+1. Build for your local platform (immediate use)
+2. Build multi-arch image (arm64 + amd64)
+3. Push to registry (if credentials provided)
 
-To push to Digital Ocean Container Registry:
+### Test the Proxy
+
+Run comprehensive tests without any external dependencies:
 
 ```bash
-# Tag for registry
-docker tag dev-proxy:latest registry.digitalocean.com/your-registry/dev-proxy:latest
-
-# Push
-docker push registry.digitalocean.com/your-registry/dev-proxy:latest
+./scripts/test.sh
 ```
+
+This will:
+- Create mock backend and frontend services
+- Start the dev-proxy
+- Test all routing (health, API, frontend)
+- Verify security headers
+- Automatically cleanup
+
+### Individual Build Scripts
+
+```bash
+# Local build only
+./scripts/build-local.sh
+
+# Multi-arch build (requires DO_REGISTRY)
+export DO_REGISTRY=registry.digitalocean.com/your-registry
+./scripts/build-multiarch.sh
+
+# Push to registry (requires DO_REGISTRY and DO_TOKEN)
+export DO_REGISTRY=registry.digitalocean.com/your-registry
+export DO_TOKEN=your-token-here
+./scripts/push-to-registry.sh
+```
+
+All scripts support `--help` for detailed usage information.
 
 ## Configuration Reference
 
