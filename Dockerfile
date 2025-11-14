@@ -1,7 +1,7 @@
 # Development Proxy - Simple nginx proxy without SSL
 # Multi-arch build for Mac (arm64) and Linux (amd64)
 
-FROM nginx:alpine
+FROM nginx:1.25.3-alpine
 
 # Install curl for health checks
 RUN apk add --no-cache curl

@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Documentation
+*.md
+!README.md
+LICENSE
+
+# Logs
+logs/
+*.log
+
+# Development
+dev-proxy/scripts/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore

@@ -3,8 +3,40 @@
 
 set -e
 
+# Show help
+if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    echo "Usage: $0"
+    echo ""
+    echo "Push multi-arch dev-proxy image to container registry."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message"
+    echo ""
+    echo "Environment Variables:"
+    echo "  DO_REGISTRY   Container registry URL (required)"
+    echo "  DO_TOKEN      Registry authentication token (required)"
+    echo "  TAG           Image tag (default: latest)"
+    echo ""
+    echo "Example:"
+    echo "  export DO_REGISTRY=registry.digitalocean.com/your-registry"
+    echo "  export DO_TOKEN=your-token-here"
+    echo "  export TAG=v1.0.0"
+    echo "  $0"
+    echo ""
+    echo "Note:"
+    echo "  - Run build-multiarch.sh before pushing"
+    echo "  - Requires Docker buildx"
+    exit 0
+fi
+
 # Configuration
-REGISTRY="${DO_REGISTRY:-registry.digitalocean.com/crudibase-registry}"
+if [ -z "$DO_REGISTRY" ]; then
+    echo "Error: DO_REGISTRY environment variable not set"
+    echo "Example: export DO_REGISTRY=registry.digitalocean.com/your-registry"
+    exit 1
+fi
+
+REGISTRY="$DO_REGISTRY"
 IMAGE_NAME="dev-proxy"
 TAG="${TAG:-latest}"
 FULL_IMAGE="$REGISTRY/$IMAGE_NAME:$TAG"
