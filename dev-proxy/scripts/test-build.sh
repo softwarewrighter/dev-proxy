@@ -3,6 +3,27 @@
 
 set -e
 
+# Show help
+if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    echo "Usage: $0"
+    echo ""
+    echo "Test dev-proxy build by creating a test container and validating it."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message"
+    echo ""
+    echo "Test Steps:"
+    echo "  1. Build test image (dev-proxy:test)"
+    echo "  2. Start test container on port 8081"
+    echo "  3. Verify health endpoint responds"
+    echo "  4. Check nginx configuration rendering"
+    echo "  5. Cleanup test container"
+    echo ""
+    echo "Example:"
+    echo "  $0"
+    exit 0
+fi
+
 echo "Testing dev-proxy build..."
 echo ""
 

@@ -4,8 +4,38 @@
 
 set -e
 
+# Show help
+if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    echo "Usage: $0"
+    echo ""
+    echo "Build dev-proxy for multiple architectures (arm64 and amd64)."
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message"
+    echo ""
+    echo "Environment Variables:"
+    echo "  DO_REGISTRY   Container registry URL (required)"
+    echo "  TAG           Image tag (default: latest)"
+    echo ""
+    echo "Example:"
+    echo "  export DO_REGISTRY=registry.digitalocean.com/your-registry"
+    echo "  export TAG=v1.0.0"
+    echo "  $0"
+    echo ""
+    echo "Requirements:"
+    echo "  - Docker buildx must be installed"
+    echo "  - Run 'docker buildx create --use' if not already configured"
+    exit 0
+fi
+
 # Configuration
-REGISTRY="${DO_REGISTRY:-registry.digitalocean.com/crudibase-registry}"
+if [ -z "$DO_REGISTRY" ]; then
+    echo "Error: DO_REGISTRY environment variable not set"
+    echo "Example: export DO_REGISTRY=registry.digitalocean.com/your-registry"
+    exit 1
+fi
+
+REGISTRY="$DO_REGISTRY"
 IMAGE_NAME="dev-proxy"
 TAG="${TAG:-latest}"
 FULL_IMAGE="$REGISTRY/$IMAGE_NAME:$TAG"
@@ -32,16 +62,16 @@ fi
 echo "Building for linux/amd64 and linux/arm64..."
 docker buildx build \
     --platform linux/amd64,linux/arm64 \
-    -t dev-proxy:latest \
     -t "$FULL_IMAGE" \
-    --load \
     .
 
 echo ""
 echo "✓ Multi-arch build complete"
 echo ""
-echo "Local image: dev-proxy:latest"
 echo "Registry image: $FULL_IMAGE"
 echo ""
+echo "Note: Multi-arch builds cannot be loaded to local Docker."
+echo "To build for local use, run: ./dev-proxy/scripts/build-local.sh"
+echo ""
 echo "To push to registry, run:"
-echo "  ./scripts/push-to-registry.sh"
+echo "  ./dev-proxy/scripts/push-to-registry.sh"
