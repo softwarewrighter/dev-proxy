@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  dev-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dev-proxy:latest
+    container_name: dev-proxy
+    restart: unless-stopped
+    ports:
+      - "${PROXY_PORT:-8080}:8080"
+    environment:
+      # App backend/frontend hosts and ports
+      - APP_BACKEND_HOST=${APP_BACKEND_HOST:-app-backend}
+      - APP_BACKEND_PORT=${APP_BACKEND_PORT:-3001}
+      - APP_FRONTEND_HOST=${APP_FRONTEND_HOST:-app-frontend}
+      - APP_FRONTEND_PORT=${APP_FRONTEND_PORT:-3000}
+    networks:
+      - ${APP_NETWORK:-app-network}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  # Connect to app's existing network
+  app-network:
+    external: true
+    name: ${APP_NETWORK:-app-network}
