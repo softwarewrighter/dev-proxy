@@ -46,12 +46,8 @@ echo "Registry: $REGISTRY"
 echo "Image: $IMAGE_NAME:$TAG"
 echo ""
 
-# Check if image exists locally
-if ! docker image inspect "$FULL_IMAGE" &> /dev/null; then
-    echo "Error: Image $FULL_IMAGE not found locally"
-    echo "Build it first with: ./scripts/build-multiarch.sh"
-    exit 1
-fi
+# Note: Multi-arch images cannot be checked locally since they aren't loaded
+# We'll build and push directly with buildx
 
 # Check if logged into registry
 if ! docker info | grep -q "$REGISTRY"; then
