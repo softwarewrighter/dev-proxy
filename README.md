@@ -2,6 +2,8 @@
 
 A simple nginx-based development proxy for testing containerized applications locally without SSL. This proxy allows you to access your app's frontend and backend through a single localhost port.
 
+**📖 New to this project? See [QUICK_START.md](QUICK_START.md) for common tasks like building, testing, and pushing to registries.**
+
 ## Features
 
 - **No SSL** - Simple HTTP proxy for local development
