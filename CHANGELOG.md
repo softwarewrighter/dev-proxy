@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **build-all.sh** - Unified script to build for all platforms
 - **test.sh** - Comprehensive functional tests with mock services
 - Standalone testing without external project dependencies
+- **QUICK_START.md** - Quick reference guide for common tasks
+- Enhanced error diagnostics in test.sh
+- Image existence validation in test.sh
 
 ### Changed
 - Pinned nginx base image to specific version (1.25.3-alpine)
@@ -27,6 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Moved scripts from dev-proxy/scripts/ to ./scripts/**
 - Replaced test-build.sh with enhanced test.sh
 - Updated README with clear build and test instructions
+- Improved test.sh error messages with detailed diagnostics
+
+### Fixed
+- Port conflicts in test.sh (removed host bindings for mock services)
+- Docker error messages now properly displayed in test.sh
+- Added pre-flight checks for image and network existence
 
 ### Security
 - Added security response headers to nginx configuration

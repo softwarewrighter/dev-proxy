@@ -61,9 +61,23 @@ trap cleanup EXIT
 # Step 1: Build the image
 echo "Step 1/6: Building dev-proxy image..."
 echo "-----------------------------------------"
-docker build -t dev-proxy:test . -q
+if ! docker build -t dev-proxy:test . -q; then
+    echo -e "${RED}✗ Failed to build image${NC}"
+    echo ""
+    echo "Trying again with verbose output:"
+    docker build -t dev-proxy:test .
+    exit 1
+fi
 echo -e "${GREEN}✓ Image built${NC}"
 echo ""
+
+# Verify image exists
+if ! docker image inspect dev-proxy:test >/dev/null 2>&1; then
+    echo -e "${RED}✗ Image dev-proxy:test not found${NC}"
+    echo "Available images:"
+    docker images | grep dev-proxy || echo "No dev-proxy images found"
+    exit 1
+fi
 
 # Step 2: Create test network
 echo "Step 2/6: Creating test network..."
@@ -111,7 +125,8 @@ if lsof -Pi :8081 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
 fi
 
 # Start the proxy container
-if ! docker run -d \
+echo "Starting container with image: dev-proxy:test"
+DOCKER_ERROR=$(docker run -d \
     --name dev-proxy-test \
     --network dev-proxy-test-network \
     -p 8081:8080 \
@@ -120,12 +135,23 @@ if ! docker run -d \
     -e APP_BACKEND_PORT=80 \
     -e APP_FRONTEND_HOST=dev-proxy-test-frontend \
     -e APP_FRONTEND_PORT=80 \
-    dev-proxy:test \
-    >/dev/null 2>&1; then
+    dev-proxy:test 2>&1)
+
+if [ $? -ne 0 ]; then
     echo -e "${RED}✗ Failed to start dev-proxy container${NC}"
-    echo "Docker error - check if the image was built correctly"
+    echo ""
+    echo "Docker error:"
+    echo "$DOCKER_ERROR"
+    echo ""
+    echo "Diagnostics:"
+    echo "  - Image exists: $(docker image inspect dev-proxy:test >/dev/null 2>&1 && echo 'yes' || echo 'NO')"
+    echo "  - Network exists: $(docker network inspect dev-proxy-test-network >/dev/null 2>&1 && echo 'yes' || echo 'NO')"
+    echo "  - Port 8081 available: $(lsof -Pi :8081 -sTCP:LISTEN -t >/dev/null 2>&1 && echo 'NO (in use)' || echo 'yes')"
     exit 1
 fi
+
+CONTAINER_ID="$DOCKER_ERROR"
+echo "Container started: $CONTAINER_ID"
 
 # Wait for proxy to be ready
 echo "Waiting for proxy to be ready..."
