@@ -9,9 +9,9 @@ if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     echo ""
     echo "Test dev-proxy by creating a complete test environment:"
     echo "  1. Create test Docker network"
-    echo "  2. Start mock backend service (port 3001)"
-    echo "  3. Start mock frontend service (port 3000)"
-    echo "  4. Start dev-proxy (port 8081)"
+    echo "  2. Start mock backend service (internal only)"
+    echo "  3. Start mock frontend service (internal only)"
+    echo "  4. Start dev-proxy (exposed on localhost:8081)"
     echo "  5. Test all routing:"
     echo "     - Health endpoint: /health"
     echo "     - API routing: /api/* → backend"
@@ -24,8 +24,12 @@ if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     echo "Example:"
     echo "  $0"
     echo ""
+    echo "Requirements:"
+    echo "  - Port 8081 must be available on your host"
+    echo ""
     echo "Note: This test runs completely standalone and doesn't require"
     echo "      any other projects or services to be running."
+    echo "      Mock services only run inside Docker network (no host port conflicts)."
     exit 0
 fi
 
@@ -74,7 +78,6 @@ echo "-----------------------------------------"
 docker run -d \
     --name dev-proxy-test-backend \
     --network dev-proxy-test-network \
-    -p 3001:80 \
     --rm \
     nginx:alpine sh -c 'echo "BACKEND_RESPONSE" > /usr/share/nginx/html/index.html && nginx -g "daemon off;"' \
     >/dev/null
@@ -88,7 +91,6 @@ echo "-----------------------------------------"
 docker run -d \
     --name dev-proxy-test-frontend \
     --network dev-proxy-test-network \
-    -p 3000:80 \
     --rm \
     nginx:alpine sh -c 'echo "FRONTEND_RESPONSE" > /usr/share/nginx/html/index.html && nginx -g "daemon off;"' \
     >/dev/null
@@ -99,7 +101,17 @@ echo ""
 # Step 5: Start dev-proxy
 echo "Step 5/6: Starting dev-proxy..."
 echo "-----------------------------------------"
-docker run -d \
+
+# Check if port 8081 is available
+if lsof -Pi :8081 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
+    echo -e "${RED}✗ Port 8081 is already in use${NC}"
+    echo "Please stop the service using port 8081 and try again:"
+    echo "  lsof -i :8081"
+    exit 1
+fi
+
+# Start the proxy container
+if ! docker run -d \
     --name dev-proxy-test \
     --network dev-proxy-test-network \
     -p 8081:8080 \
@@ -109,16 +121,36 @@ docker run -d \
     -e APP_FRONTEND_HOST=dev-proxy-test-frontend \
     -e APP_FRONTEND_PORT=80 \
     dev-proxy:test \
-    >/dev/null
+    >/dev/null 2>&1; then
+    echo -e "${RED}✗ Failed to start dev-proxy container${NC}"
+    echo "Docker error - check if the image was built correctly"
+    exit 1
+fi
 
 # Wait for proxy to be ready
 echo "Waiting for proxy to be ready..."
-for i in {1..10}; do
+for i in {1..15}; do
+    # Check if container is still running
+    if ! docker ps --filter "name=dev-proxy-test" --format "{{.Names}}" | grep -q "dev-proxy-test"; then
+        echo -e "${RED}✗ Proxy container exited unexpectedly${NC}"
+        echo ""
+        echo "Container logs:"
+        docker logs dev-proxy-test 2>&1 || echo "No logs available"
+        exit 1
+    fi
+
+    # Check if health endpoint is responding
     if curl -sf http://localhost:8081/health >/dev/null 2>&1; then
         break
     fi
-    if [ $i -eq 10 ]; then
-        echo -e "${RED}✗ Proxy failed to start${NC}"
+
+    if [ $i -eq 15 ]; then
+        echo -e "${RED}✗ Proxy failed to become healthy${NC}"
+        echo ""
+        echo "Container status:"
+        docker ps -a --filter "name=dev-proxy-test"
+        echo ""
+        echo "Container logs:"
         docker logs dev-proxy-test
         exit 1
     fi
@@ -209,12 +241,14 @@ if [ $TESTS_FAILED -eq 0 ]; then
     echo -e "${GREEN}✓ All tests passed!${NC} ($TESTS_PASSED/$((TESTS_PASSED + TESTS_FAILED)))"
     echo ""
     echo "Test environment details:"
-    echo "  - Network: dev-proxy-test-network"
-    echo "  - Backend: http://localhost:3001 (nginx, returns 'BACKEND_RESPONSE')"
-    echo "  - Frontend: http://localhost:3000 (nginx, returns 'FRONTEND_RESPONSE')"
-    echo "  - Proxy: http://localhost:8081"
+    echo "  - Network: dev-proxy-test-network (isolated Docker network)"
+    echo "  - Backend: dev-proxy-test-backend:80 (internal, returns 'BACKEND_RESPONSE')"
+    echo "  - Frontend: dev-proxy-test-frontend:80 (internal, returns 'FRONTEND_RESPONSE')"
+    echo "  - Proxy: http://localhost:8081 (exposed to host)"
     echo ""
-    echo "You can test manually before cleanup:"
+    echo "All services communicate through the proxy - no direct host access to backend/frontend."
+    echo ""
+    echo "You can test manually via the proxy:"
     echo "  curl http://localhost:8081/health    # Should return 'OK'"
     echo "  curl http://localhost:8081/api/      # Should return 'BACKEND_RESPONSE'"
     echo "  curl http://localhost:8081/          # Should return 'FRONTEND_RESPONSE'"
