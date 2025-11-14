@@ -9,17 +9,11 @@ RUN apk add --no-cache curl
 # Copy nginx configuration template
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
-# Create directory for nginx pid file (for non-root user)
-RUN mkdir -p /var/run/nginx && \
-    chown -R nginx:nginx /var/run/nginx && \
-    chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx
-
-# Switch to non-root user
-USER nginx
-
 # Expose proxy port
 EXPOSE 8080
+
+# Note: Master process runs as root (standard for nginx in containers)
+# but nginx workers automatically run as the unprivileged 'nginx' user
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
