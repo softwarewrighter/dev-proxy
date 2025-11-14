@@ -124,24 +124,25 @@ if lsof -Pi :8081 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
     exit 1
 fi
 
-# Start the proxy container
+# Start the proxy container (no --rm so we can get logs if it crashes)
 echo "Starting container with image: dev-proxy:test"
-DOCKER_ERROR=$(docker run -d \
+CONTAINER_ID=$(docker run -d \
     --name dev-proxy-test \
     --network dev-proxy-test-network \
     -p 8081:8080 \
-    --rm \
     -e APP_BACKEND_HOST=dev-proxy-test-backend \
     -e APP_BACKEND_PORT=80 \
     -e APP_FRONTEND_HOST=dev-proxy-test-frontend \
     -e APP_FRONTEND_PORT=80 \
     dev-proxy:test 2>&1)
 
-if [ $? -ne 0 ]; then
+START_EXIT_CODE=$?
+
+if [ $START_EXIT_CODE -ne 0 ]; then
     echo -e "${RED}✗ Failed to start dev-proxy container${NC}"
     echo ""
     echo "Docker error:"
-    echo "$DOCKER_ERROR"
+    echo "$CONTAINER_ID"
     echo ""
     echo "Diagnostics:"
     echo "  - Image exists: $(docker image inspect dev-proxy:test >/dev/null 2>&1 && echo 'yes' || echo 'NO')"
@@ -150,18 +151,38 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-CONTAINER_ID="$DOCKER_ERROR"
 echo "Container started: $CONTAINER_ID"
+
+# Give it a moment to initialize
+sleep 2
+
+# Check if it's still running after startup
+if ! docker ps --filter "name=dev-proxy-test" --format "{{.Names}}" | grep -q "dev-proxy-test"; then
+    echo -e "${RED}✗ Container exited immediately after starting${NC}"
+    echo ""
+    echo "Container logs:"
+    docker logs dev-proxy-test 2>&1
+    echo ""
+    echo "Container exit code:"
+    docker inspect dev-proxy-test --format='{{.State.ExitCode}}' 2>/dev/null || echo "Unable to get exit code"
+    exit 1
+fi
 
 # Wait for proxy to be ready
 echo "Waiting for proxy to be ready..."
 for i in {1..15}; do
     # Check if container is still running
     if ! docker ps --filter "name=dev-proxy-test" --format "{{.Names}}" | grep -q "dev-proxy-test"; then
-        echo -e "${RED}✗ Proxy container exited unexpectedly${NC}"
+        echo -e "${RED}✗ Proxy container exited unexpectedly (crashed during startup)${NC}"
         echo ""
         echo "Container logs:"
-        docker logs dev-proxy-test 2>&1 || echo "No logs available"
+        docker logs dev-proxy-test 2>&1
+        echo ""
+        echo "Container exit code:"
+        docker inspect dev-proxy-test --format='{{.State.ExitCode}}' 2>/dev/null || echo "Unable to get exit code"
+        echo ""
+        echo "Last state:"
+        docker inspect dev-proxy-test --format='{{.State.Status}}: {{.State.Error}}' 2>/dev/null || echo "Unable to get state"
         exit 1
     fi
 
@@ -173,11 +194,16 @@ for i in {1..15}; do
     if [ $i -eq 15 ]; then
         echo -e "${RED}✗ Proxy failed to become healthy${NC}"
         echo ""
+        echo "Container is running but not responding to health checks."
+        echo ""
         echo "Container status:"
         docker ps -a --filter "name=dev-proxy-test"
         echo ""
         echo "Container logs:"
-        docker logs dev-proxy-test
+        docker logs dev-proxy-test 2>&1
+        echo ""
+        echo "Try checking nginx config:"
+        docker exec dev-proxy-test nginx -t 2>&1 || echo "Cannot test nginx config"
         exit 1
     fi
     sleep 1
