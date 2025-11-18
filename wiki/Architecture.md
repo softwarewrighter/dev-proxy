@@ -357,7 +357,7 @@ Dev Proxy assumes standardized internal ports:
 
 ## Related Documentation
 
-- [Request Flow](Request-Flow.md) - See how requests flow through the system
-- [Configuration](Configuration.md) - Detailed configuration options
-- [Build Process](Build-Process.md) - How images are built and deployed
-- [Security](Security.md) - Security architecture and considerations
+- [Request Flow](Request-Flow) - See how requests flow through the system
+- [Configuration](Configuration) - Detailed configuration options
+- [Build Process](Build-Process) - How images are built and deployed
+- [Security](Security) - Security architecture and considerations

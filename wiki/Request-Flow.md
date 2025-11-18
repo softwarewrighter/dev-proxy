@@ -453,6 +453,6 @@ For development purposes, performance is excellent.
 
 ## Related Documentation
 
-- [Architecture](Architecture.md) - Overall system architecture
-- [Configuration](Configuration.md) - Configuring timeouts and limits
-- [Troubleshooting](Troubleshooting.md) - Debugging request flow issues
+- [Architecture](Architecture) - Overall system architecture
+- [Configuration](Configuration) - Configuring timeouts and limits
+- [Troubleshooting](Troubleshooting) - Debugging request flow issues
