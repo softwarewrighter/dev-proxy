@@ -648,7 +648,7 @@ docker inspect dev-proxy | jq '.[0].State.Health'
 
 ## Related Documentation
 
-- [Architecture](Architecture.md) - Security architecture overview
-- [Configuration](Configuration.md) - Secure configuration practices
-- [Build Process](Build-Process.md) - Secure build practices
-- [Troubleshooting](Troubleshooting.md) - Security-related issues
+- [Architecture](Architecture) - Security architecture overview
+- [Configuration](Configuration) - Secure configuration practices
+- [Build Process](Build-Process) - Secure build practices
+- [Troubleshooting](Troubleshooting) - Security-related issues

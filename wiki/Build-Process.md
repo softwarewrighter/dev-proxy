@@ -732,7 +732,7 @@ graph LR
 
 ## Related Documentation
 
-- [Architecture](Architecture.md) - Understanding what's being built
-- [Configuration](Configuration.md) - Build-time configuration
-- [Security](Security.md) - Security considerations in builds
-- [Troubleshooting](Troubleshooting.md) - Build issues and solutions
+- [Architecture](Architecture) - Understanding what's being built
+- [Configuration](Configuration) - Build-time configuration
+- [Security](Security) - Security considerations in builds
+- [Troubleshooting](Troubleshooting) - Build issues and solutions

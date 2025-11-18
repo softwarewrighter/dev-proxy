@@ -263,7 +263,7 @@ add_header X-XSS-Protection "1; mode=block" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 ```
 
-See [Security](Security.md) for details on each header.
+See [Security](Security) for details on each header.
 
 ##### 4. Location Blocks
 
@@ -596,7 +596,7 @@ docker compose exec dev-proxy curl -f http://${APP_FRONTEND_HOST}:${APP_FRONTEND
 
 ## Related Documentation
 
-- [Architecture](Architecture.md) - How configuration flows through the system
-- [Request Flow](Request-Flow.md) - How nginx uses the configuration
-- [Build Process](Build-Process.md) - Building with different configurations
-- [Troubleshooting](Troubleshooting.md) - Configuration-related issues
+- [Architecture](Architecture) - How configuration flows through the system
+- [Request Flow](Request-Flow) - How nginx uses the configuration
+- [Build Process](Build-Process) - Building with different configurations
+- [Troubleshooting](Troubleshooting) - Configuration-related issues

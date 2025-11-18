@@ -758,9 +758,9 @@ If you're still experiencing issues:
 
 1. **Check Existing Issues**: [GitHub Issues](https://github.com/softwarewrighter/dev-proxy/issues)
 2. **Review Documentation**:
-   - [Architecture](Architecture.md)
-   - [Configuration](Configuration.md)
-   - [Request Flow](Request-Flow.md)
+   - [Architecture](Architecture)
+   - [Configuration](Configuration)
+   - [Request Flow](Request-Flow)
 3. **Create New Issue**: Include:
    - Output of `docker compose config`
    - Container logs: `docker compose logs dev-proxy`
@@ -784,8 +784,8 @@ Before asking for help, verify:
 
 ## Related Documentation
 
-- [Architecture](Architecture.md) - Understanding the system design
-- [Configuration](Configuration.md) - Configuration options
-- [Request Flow](Request-Flow.md) - How requests are processed
-- [Build Process](Build-Process.md) - Build and test issues
-- [Security](Security.md) - Security-related troubleshooting
+- [Architecture](Architecture) - Understanding the system design
+- [Configuration](Configuration) - Configuration options
+- [Request Flow](Request-Flow) - How requests are processed
+- [Build Process](Build-Process) - Build and test issues
+- [Security](Security) - Security-related troubleshooting

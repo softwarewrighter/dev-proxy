@@ -35,15 +35,15 @@ docker compose up -d
 
 ### Core Documentation
 
-- **[Architecture](Architecture.md)** - System architecture, components, and design decisions
-- **[Request Flow](Request-Flow.md)** - How requests flow through the proxy with sequence diagrams
-- **[Configuration](Configuration.md)** - Detailed configuration reference and examples
+- **[Architecture](Architecture)** - System architecture, components, and design decisions
+- **[Request Flow](Request-Flow)** - How requests flow through the proxy with sequence diagrams
+- **[Configuration](Configuration)** - Detailed configuration reference and examples
 
 ### Operations
 
-- **[Build Process](Build-Process.md)** - Building, testing, and pushing to registries
-- **[Security](Security.md)** - Security considerations and best practices
-- **[Troubleshooting](Troubleshooting.md)** - Common issues and solutions
+- **[Build Process](Build-Process)** - Building, testing, and pushing to registries
+- **[Security](Security)** - Security considerations and best practices
+- **[Troubleshooting](Troubleshooting)** - Common issues and solutions
 
 ## Architecture Overview
 
@@ -67,7 +67,7 @@ graph LR
 
 ## Getting Help
 
-- Check the **[Troubleshooting](Troubleshooting.md)** guide
+- Check the **[Troubleshooting](Troubleshooting)** guide
 - Review existing [GitHub Issues](https://github.com/softwarewrighter/dev-proxy/issues)
 - Read the main [README](../README.md) and [QUICK_START](../QUICK_START.md) guides
 
