@@ -32,19 +32,28 @@ sequenceDiagram
     participant DevProxy as Dev Proxy<br/>(nginx:8080)
     participant Frontend as Frontend<br/>(app-frontend:3000)
 
-    Browser->>+DevProxy: GET / HTTP/1.1<br/>Host: localhost:8080
-    Note over DevProxy: Match location /<br/>proxy_pass to frontend
+    Browser->>+DevProxy: GET / HTTP/1.1
+    Note over Browser,DevProxy: Host: localhost:8080
+    Note over DevProxy: Match location /
+    Note over DevProxy: proxy_pass to frontend
 
-    DevProxy->>DevProxy: Add proxy headers<br/>X-Real-IP, X-Forwarded-For
-    DevProxy->>+Frontend: GET / HTTP/1.1<br/>Host: localhost:8080<br/>X-Real-IP: 172.17.0.1
+    DevProxy->>DevProxy: Add proxy headers
+    Note over DevProxy: X-Real-IP, X-Forwarded-For
 
-    Frontend->>Frontend: Process request<br/>Generate HTML
+    DevProxy->>+Frontend: GET / HTTP/1.1
+    Note over DevProxy,Frontend: Host: localhost:8080<br/>X-Real-IP: 172.17.0.1
 
-    Frontend-->>-DevProxy: 200 OK<br/>Content-Type: text/html<br/>&lt;html&gt;...&lt;/html&gt;
+    Frontend->>Frontend: Process request
+    Note over Frontend: Generate HTML
 
-    DevProxy->>DevProxy: Add security headers<br/>X-Frame-Options, etc.
+    Frontend-->>-DevProxy: 200 OK
+    Note over Frontend,DevProxy: Content-Type: text/html
 
-    DevProxy-->>-Browser: 200 OK<br/>X-Frame-Options: SAMEORIGIN<br/>&lt;html&gt;...&lt;/html&gt;
+    DevProxy->>DevProxy: Add security headers
+    Note over DevProxy: X-Frame-Options, etc.
+
+    DevProxy-->>-Browser: 200 OK
+    Note over DevProxy,Browser: X-Frame-Options: SAMEORIGIN
 
     Note over Browser: Render page
 ```
@@ -71,26 +80,35 @@ sequenceDiagram
     participant Backend as Backend<br/>(app-backend:3001)
     participant Database as Database
 
-    Browser->>+DevProxy: GET /api/users HTTP/1.1<br/>Host: localhost:8080<br/>Authorization: Bearer token123
+    Browser->>+DevProxy: GET /api/users HTTP/1.1
+    Note over Browser,DevProxy: Host: localhost:8080<br/>Authorization: Bearer token123
 
-    Note over DevProxy: Match location /api/<br/>Strip /api prefix<br/>proxy_pass to backend
+    Note over DevProxy: Match location /api/
+    Note over DevProxy: Strip /api prefix
+    Note over DevProxy: proxy_pass to backend
 
-    DevProxy->>DevProxy: Add proxy headers<br/>Preserve Authorization
+    DevProxy->>DevProxy: Add proxy headers
+    Note over DevProxy: Preserve Authorization
 
-    DevProxy->>+Backend: GET /users HTTP/1.1<br/>Host: localhost:8080<br/>Authorization: Bearer token123<br/>X-Real-IP: 172.17.0.1
+    DevProxy->>+Backend: GET /users HTTP/1.1
+    Note over DevProxy,Backend: Host: localhost:8080<br/>Authorization: Bearer token123<br/>X-Real-IP: 172.17.0.1
 
-    Backend->>Backend: Validate token<br/>Process request
+    Backend->>Backend: Validate token
+    Note over Backend: Process request
 
     Backend->>+Database: SELECT * FROM users
     Database-->>-Backend: Query results
 
-    Backend->>Backend: Format response<br/>JSON serialization
+    Backend->>Backend: Format response
+    Note over Backend: JSON serialization
 
-    Backend-->>-DevProxy: 200 OK<br/>Content-Type: application/json<br/>{users: [...]}
+    Backend-->>-DevProxy: 200 OK
+    Note over Backend,DevProxy: Content-Type: application/json<br/>{users: [...]}
 
     DevProxy->>DevProxy: Add security headers
 
-    DevProxy-->>-Browser: 200 OK<br/>X-Frame-Options: SAMEORIGIN<br/>{users: [...]}
+    DevProxy-->>-Browser: 200 OK
+    Note over DevProxy,Browser: X-Frame-Options: SAMEORIGIN<br/>{users: [...]}
 
     Note over Browser: Process JSON
 ```
@@ -133,17 +151,21 @@ sequenceDiagram
     participant Nginx as Nginx
 
     loop Every 30s
-        Docker->>+Container: Execute health check<br/>curl -f http://localhost:8080/health
+        Docker->>+Container: Execute health check
+        Note over Docker,Container: curl -f http://localhost:8080/health
 
         Container->>+Nginx: GET /health HTTP/1.1
 
-        Note over Nginx: Match location /health<br/>No proxy, direct response
+        Note over Nginx: Match location /health
+        Note over Nginx: No proxy, direct response
 
-        Nginx-->>-Container: 200 OK<br/>Content-Type: text/plain<br/>OK
+        Nginx-->>-Container: 200 OK
+        Note over Nginx,Container: Content-Type: text/plain
 
-        Container-->>-Docker: Exit code 0<br/>(healthy)
+        Container-->>-Docker: Exit code 0 (healthy)
 
-        Note over Docker: Update container status<br/>healthy
+        Note over Docker: Update container status
+        Note over Docker: healthy
     end
 ```
 
@@ -201,13 +223,16 @@ sequenceDiagram
     Browser->>+DevProxy: GET /api/users
 
     DevProxy->>Backend: GET /users
-    Note over Backend: Connection refused<br/>Service not running
+    Note over Backend: Connection refused
+    Note over Backend: Service not running
 
-    DevProxy->>DevProxy: proxy_connect_timeout<br/>60 seconds
+    DevProxy->>DevProxy: proxy_connect_timeout
+    Note over DevProxy: 60 seconds
 
     Note over DevProxy: Backend unreachable
 
-    DevProxy-->>-Browser: 502 Bad Gateway<br/>nginx error page
+    DevProxy-->>-Browser: 502 Bad Gateway
+    Note over DevProxy,Browser: nginx error page
 
     Note over Browser: Display error
 ```
@@ -224,15 +249,18 @@ sequenceDiagram
 
     DevProxy->>+Frontend: GET /slow-page
 
-    Note over Frontend: Processing...<br/>Taking too long
+    Note over Frontend: Processing...
+    Note over Frontend: Taking too long
 
-    Note over DevProxy: proxy_read_timeout<br/>60 seconds elapsed
+    Note over DevProxy: proxy_read_timeout
+    Note over DevProxy: 60 seconds elapsed
 
     DevProxy-->>-Browser: 504 Gateway Timeout
 
-    Frontend-->>-DevProxy: 200 OK<br/>(too late)
+    Frontend-->>-DevProxy: 200 OK (too late)
 
-    Note over DevProxy: Response discarded<br/>Connection already closed
+    Note over DevProxy: Response discarded
+    Note over DevProxy: Connection already closed
 ```
 
 ### Timeout Configuration
@@ -255,17 +283,22 @@ sequenceDiagram
     participant DevProxy as Dev Proxy
     participant Frontend as Frontend
 
-    Browser->>+DevProxy: GET /ws HTTP/1.1<br/>Upgrade: websocket<br/>Connection: Upgrade
+    Browser->>+DevProxy: GET /ws HTTP/1.1
+    Note over Browser,DevProxy: Upgrade: websocket<br/>Connection: Upgrade
 
-    Note over DevProxy: Detect Upgrade header<br/>proxy_set_header Upgrade
+    Note over DevProxy: Detect Upgrade header
+    Note over DevProxy: proxy_set_header Upgrade
 
-    DevProxy->>+Frontend: GET /ws HTTP/1.1<br/>Upgrade: websocket<br/>Connection: Upgrade
+    DevProxy->>+Frontend: GET /ws HTTP/1.1
+    Note over DevProxy,Frontend: Upgrade: websocket<br/>Connection: Upgrade
 
-    Frontend-->>DevProxy: 101 Switching Protocols<br/>Upgrade: websocket
+    Frontend-->>DevProxy: 101 Switching Protocols
+    Note over Frontend,DevProxy: Upgrade: websocket
 
     DevProxy-->>Browser: 101 Switching Protocols
 
-    Note over Browser,Frontend: WebSocket connection established<br/>Full duplex communication
+    Note over Browser,Frontend: WebSocket connection established
+    Note over Browser,Frontend: Full duplex communication
 
     Browser->>Frontend: WebSocket frame
     Frontend->>Browser: WebSocket frame
