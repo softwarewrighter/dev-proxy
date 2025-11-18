@@ -73,17 +73,17 @@ The core component is nginx running in Alpine Linux.
 graph LR
     subgraph "Nginx Container"
         direction TB
-        Master[Nginx Master<br/>Process<br/>PID 1]
-        Worker1[Worker Process<br/>nginx user]
-        Worker2[Worker Process<br/>nginx user]
+        Master["Nginx Master<br/>Process<br/>PID 1"]
+        Worker1["Worker Process<br/>nginx user"]
+        Worker2["Worker Process<br/>nginx user"]
 
         Master --> Worker1
         Master --> Worker2
 
         subgraph "Configuration"
-            Template[nginx.conf.template]
-            Env[Environment<br/>Variables]
-            Final[/etc/nginx/conf.d/<br/>default.conf]
+            Template["nginx.conf.template"]
+            Env["Environment<br/>Variables"]
+            Final["Final Config<br/>/etc/nginx/conf.d/default.conf"]
 
             Template --> Final
             Env --> Final
