@@ -69,7 +69,7 @@ graph LR
 
 - Check the **[Troubleshooting](Troubleshooting)** guide
 - Review existing [GitHub Issues](https://github.com/softwarewrighter/dev-proxy/issues)
-- Read the main [README](../README.md) and [QUICK_START](../QUICK_START.md) guides
+- Read the main [README](https://github.com/softwarewrighter/dev-proxy/blob/main/README.md) and [QUICK_START](https://github.com/softwarewrighter/dev-proxy/blob/main/QUICK_START.md) guides
 
 ## Contributing
 
@@ -83,4 +83,4 @@ This is an open-source project. Contributions are welcome! Please ensure:
 
 Current version: **0.1.x**
 
-See [CHANGELOG.md](../CHANGELOG.md) for version history.
+See [CHANGELOG.md](https://github.com/softwarewrighter/dev-proxy/blob/main/CHANGELOG.md) for version history.

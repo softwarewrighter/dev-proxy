@@ -605,7 +605,7 @@ sequenceDiagram
 
 ## Vulnerability Reporting
 
-See [SECURITY.md](../SECURITY.md) in the repository root for:
+See [SECURITY.md](https://github.com/softwarewrighter/dev-proxy/blob/main/SECURITY.md) in the repository root for:
 
 - How to report vulnerabilities
 - Response timeline
