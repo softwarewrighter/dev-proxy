@@ -19,19 +19,19 @@ This page provides solutions to common issues encountered when using Dev Proxy, 
 
 ```mermaid
 graph TB
-    Start([Issue Reported]) --> Running{Container<br/>running?}
+    Start([Issue Reported]) --> Running{Container running?}
 
     Running -->|No| StartIssue[Container won't start]
-    Running -->|Yes| Healthy{Health check<br/>passing?}
+    Running -->|Yes| Healthy{Health check passing?}
 
     Healthy -->|No| HealthIssue[Health check failing]
-    Healthy -->|Yes| Connect{Can connect<br/>to proxy?}
+    Healthy -->|Yes| Connect{Can connect to proxy?}
 
     Connect -->|No| ConnectIssue[Connection issues]
-    Connect -->|Yes| Route{Routing<br/>working?}
+    Connect -->|Yes| Route{Routing working?}
 
     Route -->|No| RouteIssue[Routing issues]
-    Route -->|Yes| Perf{Performance<br/>acceptable?}
+    Route -->|Yes| Perf{Performance acceptable?}
 
     Perf -->|No| PerfIssue[Performance issues]
     Perf -->|Yes| Other[Other issues]
@@ -78,16 +78,16 @@ docker compose restart dev-proxy
 
 ```mermaid
 graph TB
-    Issue[Can't connect to proxy] --> Check1{Container<br/>running?}
+    Issue[Can't connect to proxy] --> Check1{Container running?}
 
     Check1 -->|No| Start[docker compose up -d]
-    Check1 -->|Yes| Check2{Port 8080<br/>available?}
+    Check1 -->|Yes| Check2{Port 8080 available?}
 
     Check2 -->|No| PortInUse[Port already in use]
     Check2 -->|Yes| Check3{Correct URL?}
 
     Check3 -->|No| FixURL[Use http://localhost:8080]
-    Check3 -->|Yes| Check4{Network<br/>correct?}
+    Check3 -->|Yes| Check4{Network correct?}
 
     Check4 -->|No| FixNetwork[Fix APP_NETWORK in .env]
     Check4 -->|Yes| CheckLogs[Review container logs]
@@ -329,7 +329,7 @@ graph LR
     Request[GET /api/users] --> Proxy[Dev Proxy]
     Proxy -->|Strips /api| Backend[GET /users]
 
-    Backend --> Check{Endpoint<br/>exists?}
+    Backend --> Check{Endpoint exists?}
     Check -->|No| Error[404 Not Found]
     Check -->|Yes| Success[200 OK]
 
@@ -458,10 +458,10 @@ docker buildx ls
 
 ```mermaid
 graph TB
-    Start[Start Container] --> CheckNet{Network<br/>exists?}
+    Start[Start Container] --> CheckNet{Network exists?}
 
     CheckNet -->|No| Error1[Error: network not found]
-    CheckNet -->|Yes| CheckExternal{Network<br/>external?}
+    CheckNet -->|Yes| CheckExternal{Network external?}
 
     CheckExternal -->|No| Error2[Error: network not external]
     CheckExternal -->|Yes| Join[Join network]
@@ -537,9 +537,9 @@ docker network inspect ${APP_NETWORK}
 
 ```mermaid
 graph LR
-    Request[Request] --> T1[Proxy Overhead<br/>~1-5ms]
-    T1 --> T2[Network Latency<br/>~1ms]
-    T2 --> T3[Upstream Processing<br/>Variable]
+    Request[Request] --> T1[Proxy Overhead ~1-5ms]
+    T1 --> T2[Network Latency ~1ms]
+    T2 --> T3[Upstream Processing Variable]
 
     T3 --> Slow{Slow?}
 

@@ -60,10 +60,10 @@ graph TB
     Threats --> T3[Configuration Errors]
     Threats --> T4[Secrets Leakage]
 
-    T1 --> M1[Non-root workers<br/>Minimal permissions]
-    T2 --> M2[Pinned versions<br/>Regular updates]
-    T3 --> M3[Validation<br/>Documentation]
-    T4 --> M4[.gitignore<br/>Documentation]
+    T1 --> M1[Non-root workers Minimal permissions]
+    T2 --> M2[Pinned versions Regular updates]
+    T3 --> M3[Validation Documentation]
+    T4 --> M4[.gitignore Documentation]
 
     style M1 fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff
     style M2 fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff
@@ -85,7 +85,7 @@ These are NOT threats for a local development tool:
 ```mermaid
 graph TB
     subgraph "External Attack Surface"
-        Port[Port 8080<br/>Localhost Only]
+        Port[Port 8080 Localhost Only]
     end
 
     subgraph "Container Attack Surface"
@@ -152,13 +152,13 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Host Machine"
-        Docker[Docker Engine<br/>root]
+        Docker[Docker Engine root]
     end
 
     subgraph "dev-proxy Container"
-        Master[Nginx Master<br/>root<br/>PID 1]
-        Worker1[Nginx Worker 1<br/>nginx user<br/>UID 101]
-        Worker2[Nginx Worker 2<br/>nginx user<br/>UID 101]
+        Master[Nginx Master root PID 1]
+        Worker1[Nginx Worker 1 nginx user UID 101]
+        Worker2[Nginx Worker 2 nginx user UID 101]
 
         Master -->|spawn| Worker1
         Master -->|spawn| Worker2
@@ -188,17 +188,17 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Read-Only"
-        Conf[/etc/nginx/<br/>Configuration]
-        Bin[/usr/sbin/nginx<br/>Binary]
+        Conf[/etc/nginx/ Configuration]
+        Bin[/usr/sbin/nginx Binary]
     end
 
     subgraph "Writable (nginx user)"
-        Logs[/var/log/nginx/<br/>Logs]
-        Cache[/var/cache/nginx/<br/>Cache]
-        Run[/var/run/<br/>PID files]
+        Logs[/var/log/nginx/ Logs]
+        Cache[/var/cache/nginx/ Cache]
+        Run[/var/run/ PID files]
     end
 
-    Worker[Nginx Worker<br/>nginx user] --> Conf
+    Worker[Nginx Worker nginx user] --> Conf
     Worker --> Bin
     Worker --> Logs
     Worker --> Cache
@@ -227,13 +227,13 @@ docker inspect dev-proxy --format='{{.HostConfig.CapAdd}}'
 
 ```mermaid
 graph TB
-    Base[nginx:1.25.3-alpine<br/>Official Base] --> Verify1[✓ Verified Publisher]
+    Base[nginx:1.25.3-alpine Official Base] --> Verify1[✓ Verified Publisher]
 
-    Base --> Layer1[+ curl package<br/>apk add --no-cache]
-    Layer1 --> Verify2[✓ Alpine Package Manager<br/>Signed packages]
+    Base --> Layer1[+ curl package apk add --no-cache]
+    Layer1 --> Verify2[✓ Alpine Package Manager Signed packages]
 
-    Layer1 --> Layer2[+ nginx.conf.template<br/>COPY]
-    Layer2 --> Verify3[✓ Version Controlled<br/>Code review]
+    Layer1 --> Layer2[+ nginx.conf.template COPY]
+    Layer2 --> Verify3[✓ Version Controlled Code review]
 
     Layer2 --> Final[dev-proxy:latest]
 
@@ -264,10 +264,10 @@ graph TB
     end
 
     subgraph "App Network (Isolated)"
-        Proxy[dev-proxy<br/>172.20.0.4]
-        Backend[app-backend<br/>172.20.0.2]
-        Frontend[app-frontend<br/>172.20.0.3]
-        DB[(database<br/>172.20.0.5)]
+        Proxy[dev-proxy 172.20.0.4]
+        Backend[app-backend 172.20.0.2]
+        Frontend[app-frontend 172.20.0.3]
+        DB[(database 172.20.0.5)]
     end
 
     Host -->|Port mapping| Docker
@@ -293,14 +293,14 @@ graph TB
 
 ```mermaid
 graph LR
-    External[External<br/>Requests] -->|❌ Blocked| Firewall[Host Firewall]
+    External[External Requests] -->|❌ Blocked| Firewall[Host Firewall]
 
-    Localhost[Localhost<br/>Requests] -->|✅ Allowed| Port[0.0.0.0:8080]
+    Localhost[Localhost Requests] -->|✅ Allowed| Port[0.0.0.0:8080]
 
-    Port --> Container[Container<br/>:8080]
+    Port --> Container[Container :8080]
 
-    Container --> Internal1[backend:3001<br/>Not Exposed]
-    Container --> Internal2[frontend:3000<br/>Not Exposed]
+    Container --> Internal1[backend:3001 Not Exposed]
+    Container --> Internal2[frontend:3000 Not Exposed]
 
     style External fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
     style Localhost fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff
@@ -344,7 +344,7 @@ sequenceDiagram
     Note over Proxy: Add security headers
 
     Proxy-->>Browser: 200 OK
-    Note over Proxy,Browser: X-Frame-Options: SAMEORIGIN<br/>X-Content-Type-Options: nosniff<br/>X-XSS-Protection: 1; mode=block<br/>Referrer-Policy: strict-origin-when-cross-origin
+    Note over Proxy,Browser: X-Frame-Options: SAMEORIGIN X-Content-Type-Options: nosniff X-XSS-Protection: 1; mode=block Referrer-Policy: strict-origin-when-cross-origin
 
     Note over Browser: Apply security policies
 ```
@@ -375,12 +375,12 @@ graph TB
 
 ```mermaid
 graph LR
-    File[File: script.txt<br/>Content-Type: text/plain]
+    File[File: script.txt Content-Type: text/plain]
 
     File --> Browser{Browser}
 
-    Browser -.->|Without header| Sniff[MIME Sniff<br/>Execute as JavaScript!]
-    Browser -->|With header| Respect[Respect Content-Type<br/>Treat as text]
+    Browser -.->|Without header| Sniff[MIME Sniff Execute as JavaScript!]
+    Browser -->|With header| Respect[Respect Content-Type Treat as text]
 
     style Sniff fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
     style Respect fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff
@@ -394,14 +394,14 @@ graph LR
 
 ```mermaid
 graph TB
-    Input[User Input:<br/>&lt;script&gt;alert('XSS')&lt;/script&gt;] --> App[Application]
+    Input[User Input: &lt;script&gt;alert('XSS')&lt;/script&gt;] --> App[Application]
 
-    App --> Response[Response includes<br/>unsanitized input]
+    App --> Response[Response includes unsanitized input]
 
-    Response --> Browser{Browser<br/>XSS Filter}
+    Response --> Browser{Browser XSS Filter}
 
-    Browser -->|Header enabled| Block[Block rendering<br/>Show error page]
-    Browser -.->|Header disabled| Execute[Execute script<br/>XSS attack!]
+    Browser -->|Header enabled| Block[Block rendering Show error page]
+    Browser -.->|Header disabled| Execute[Execute script XSS attack!]
 
     style Block fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff
     style Execute fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
@@ -417,12 +417,12 @@ graph TB
 
 ```mermaid
 graph TB
-    YourApp[Your App<br/>https://localhost:8080/sensitive/page] --> Click[User clicks link]
+    YourApp[Your App https://localhost:8080/sensitive/page] --> Click[User clicks link]
 
     Click --> SameOrigin{Same Origin?}
 
-    SameOrigin -->|Yes| SendFull[Send Full URL<br/>https://localhost:8080/sensitive/page]
-    SameOrigin -->|No| SendOrigin[Send Origin Only<br/>https://localhost:8080]
+    SameOrigin -->|Yes| SendFull[Send Full URL https://localhost:8080/sensitive/page]
+    SameOrigin -->|No| SendOrigin[Send Origin Only https://localhost:8080]
 
     style SendFull fill:#4a9eff,stroke:#333,stroke-width:2px,color:#fff
     style SendOrigin fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff
@@ -446,7 +446,7 @@ graph TB
     Ignored --> Env[.env file]
     Env --> Local[Local development only]
 
-    Committed --> Exposed[Exposed in history<br/>SECURITY BREACH]
+    Committed --> Exposed[Exposed in history SECURITY BREACH]
 
     style Committed fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
     style Ignored fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff
@@ -499,14 +499,14 @@ docker stats dev-proxy
 
 ```mermaid
 graph TB
-    Start([Monthly Check]) --> Base[Check nginx:alpine<br/>for updates]
+    Start([Monthly Check]) --> Base[Check nginx:alpine for updates]
 
-    Base --> Security[Review security<br/>advisories]
+    Base --> Security[Review security advisories]
 
-    Security --> Alpine[Check Alpine<br/>security updates]
-    Security --> Nginx[Check nginx<br/>security updates]
+    Security --> Alpine[Check Alpine security updates]
+    Security --> Nginx[Check nginx security updates]
 
-    Alpine --> Update{Updates<br/>available?}
+    Alpine --> Update{Updates available?}
     Nginx --> Update
 
     Update -->|Yes| Rebuild[Rebuild image]
@@ -565,7 +565,7 @@ sequenceDiagram
     Docker->>Registry: Upload with auth
     Registry-->>Docker: ✓ Success
 
-    Note over Dev,Registry: Token never written to disk<br/>or command history
+    Note over Dev,Registry: Token never written to disk or command history
 ```
 
 ## Security Checklist

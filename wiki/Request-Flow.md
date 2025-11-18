@@ -29,8 +29,8 @@ All requests flow through nginx's routing logic based on URL path matching.
 ```mermaid
 sequenceDiagram
     participant Browser
-    participant DevProxy as Dev Proxy<br/>(nginx:8080)
-    participant Frontend as Frontend<br/>(app-frontend:3000)
+    participant DevProxy as Dev Proxy (nginx:8080)
+    participant Frontend as Frontend (app-frontend:3000)
 
     Browser->>+DevProxy: GET / HTTP/1.1
     Note over Browser,DevProxy: Host: localhost:8080
@@ -41,7 +41,7 @@ sequenceDiagram
     Note over DevProxy: X-Real-IP, X-Forwarded-For
 
     DevProxy->>+Frontend: GET / HTTP/1.1
-    Note over DevProxy,Frontend: Host: localhost:8080<br/>X-Real-IP: 172.17.0.1
+    Note over DevProxy,Frontend: Host: localhost:8080 X-Real-IP: 172.17.0.1
 
     Frontend->>Frontend: Process request
     Note over Frontend: Generate HTML
@@ -76,12 +76,12 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Browser
-    participant DevProxy as Dev Proxy<br/>(nginx:8080)
-    participant Backend as Backend<br/>(app-backend:3001)
+    participant DevProxy as Dev Proxy (nginx:8080)
+    participant Backend as Backend (app-backend:3001)
     participant Database as Database
 
     Browser->>+DevProxy: GET /api/users HTTP/1.1
-    Note over Browser,DevProxy: Host: localhost:8080<br/>Authorization: Bearer token123
+    Note over Browser,DevProxy: Host: localhost:8080 Authorization: Bearer token123
 
     Note over DevProxy: Match location /api/
     Note over DevProxy: Strip /api prefix
@@ -91,7 +91,7 @@ sequenceDiagram
     Note over DevProxy: Preserve Authorization
 
     DevProxy->>+Backend: GET /users HTTP/1.1
-    Note over DevProxy,Backend: Host: localhost:8080<br/>Authorization: Bearer token123<br/>X-Real-IP: 172.17.0.1
+    Note over DevProxy,Backend: Host: localhost:8080 Authorization: Bearer token123 X-Real-IP: 172.17.0.1
 
     Backend->>Backend: Validate token
     Note over Backend: Process request
@@ -103,12 +103,12 @@ sequenceDiagram
     Note over Backend: JSON serialization
 
     Backend-->>-DevProxy: 200 OK
-    Note over Backend,DevProxy: Content-Type: application/json<br/>{users: [...]}
+    Note over Backend,DevProxy: Content-Type: application/json {users: [...]}
 
     DevProxy->>DevProxy: Add security headers
 
     DevProxy-->>-Browser: 200 OK
-    Note over DevProxy,Browser: X-Frame-Options: SAMEORIGIN<br/>{users: [...]}
+    Note over DevProxy,Browser: X-Frame-Options: SAMEORIGIN {users: [...]}
 
     Note over Browser: Process JSON
 ```
@@ -147,7 +147,7 @@ location /api/ {
 ```mermaid
 sequenceDiagram
     participant Docker as Docker Engine
-    participant Container as Dev Proxy<br/>Container
+    participant Container as Dev Proxy Container
     participant Nginx as Nginx
 
     loop Every 30s
@@ -195,10 +195,10 @@ location /health {
 ```mermaid
 stateDiagram-v2
     [*] --> Starting: Container starts
-    Starting --> Healthy: Health check passes<br/>within start_period
-    Starting --> Unhealthy: Health checks fail<br/>after 3 retries
+    Starting --> Healthy: Health check passes within start_period
+    Starting --> Unhealthy: Health checks fail after 3 retries
 
-    Healthy --> Unhealthy: Health check fails<br/>3 consecutive times
+    Healthy --> Unhealthy: Health check fails 3 consecutive times
     Unhealthy --> Healthy: Health check passes
 
     Unhealthy --> [*]: Container stops
@@ -218,7 +218,7 @@ stateDiagram-v2
 sequenceDiagram
     participant Browser
     participant DevProxy as Dev Proxy
-    participant Backend as Backend<br/>(down)
+    participant Backend as Backend (down)
 
     Browser->>+DevProxy: GET /api/users
 
@@ -284,13 +284,13 @@ sequenceDiagram
     participant Frontend as Frontend
 
     Browser->>+DevProxy: GET /ws HTTP/1.1
-    Note over Browser,DevProxy: Upgrade: websocket<br/>Connection: Upgrade
+    Note over Browser,DevProxy: Upgrade: websocket Connection: Upgrade
 
     Note over DevProxy: Detect Upgrade header
     Note over DevProxy: proxy_set_header Upgrade
 
     DevProxy->>+Frontend: GET /ws HTTP/1.1
-    Note over DevProxy,Frontend: Upgrade: websocket<br/>Connection: Upgrade
+    Note over DevProxy,Frontend: Upgrade: websocket Connection: Upgrade
 
     Frontend-->>DevProxy: 101 Switching Protocols
     Note over Frontend,DevProxy: Upgrade: websocket
@@ -346,11 +346,11 @@ graph LR
 
     Nginx --> Headers{Added Headers}
 
-    Headers --> Real[X-Real-IP<br/>Client's real IP]
-    Headers --> Forwarded[X-Forwarded-For<br/>Proxy chain]
-    Headers --> Proto[X-Forwarded-Proto<br/>http/https]
-    Headers --> Host[Host<br/>Original host]
-    Headers --> Upgrade[Upgrade<br/>websocket support]
+    Headers --> Real[X-Real-IP Client's real IP]
+    Headers --> Forwarded[X-Forwarded-For Proxy chain]
+    Headers --> Proto[X-Forwarded-Proto http/https]
+    Headers --> Host[Host Original host]
+    Headers --> Upgrade[Upgrade websocket support]
 
     Real --> Upstream[Upstream Service]
     Forwarded --> Upstream
@@ -401,33 +401,33 @@ add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
 ```mermaid
 graph TB
-    Start([Browser Request]) --> Port[Port Mapping<br/>8080:8080]
-    Port --> Nginx[Nginx Receives<br/>Request]
+    Start([Browser Request]) --> Port[Port Mapping 8080:8080]
+    Port --> Nginx[Nginx Receives Request]
 
-    Nginx --> Route{Route<br/>Decision}
+    Nginx --> Route{Route Decision}
 
     Route -->|/health| Health[Health Handler]
-    Route -->|/api/*| API[API Location<br/>Block]
-    Route -->|/*| Frontend[Frontend Location<br/>Block]
+    Route -->|/api/*| API[API Location Block]
+    Route -->|/*| Frontend[Frontend Location Block]
 
     Health --> HealthResp[Return 200 OK]
 
-    API --> APIHeaders[Add Proxy<br/>Headers]
-    APIHeaders --> APIProxy[proxy_pass to<br/>backend:3001]
-    APIProxy --> APIUpstream[Backend<br/>Processing]
+    API --> APIHeaders[Add Proxy Headers]
+    APIHeaders --> APIProxy[proxy_pass to backend:3001]
+    APIProxy --> APIUpstream[Backend Processing]
 
-    Frontend --> FrontendHeaders[Add Proxy<br/>Headers]
-    FrontendHeaders --> FrontendProxy[proxy_pass to<br/>frontend:3000]
-    FrontendProxy --> FrontendUpstream[Frontend<br/>Processing]
+    Frontend --> FrontendHeaders[Add Proxy Headers]
+    FrontendHeaders --> FrontendProxy[proxy_pass to frontend:3000]
+    FrontendProxy --> FrontendUpstream[Frontend Processing]
 
-    APIUpstream --> APIResponse[Backend<br/>Response]
-    FrontendUpstream --> FrontendResponse[Frontend<br/>Response]
+    APIUpstream --> APIResponse[Backend Response]
+    FrontendUpstream --> FrontendResponse[Frontend Response]
 
-    HealthResp --> Security[Add Security<br/>Headers]
+    HealthResp --> Security[Add Security Headers]
     APIResponse --> Security
     FrontendResponse --> Security
 
-    Security --> Return([Return to<br/>Browser])
+    Security --> Return([Return to Browser])
 
     style Nginx fill:#4a9eff,stroke:#333,stroke-width:3px,color:#fff
     style Health fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff

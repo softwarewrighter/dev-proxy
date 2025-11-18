@@ -30,14 +30,14 @@ Dev Proxy provides several build scripts for different use cases:
 
 ```mermaid
 graph TB
-    BuildAll[build-all.sh<br/>Master Script]
+    BuildAll[build-all.sh Master Script]
 
     BuildAll --> Local[build-local.sh]
     BuildAll --> Multi[build-multiarch.sh]
     BuildAll --> Push[push-to-registry.sh]
 
-    Local --> LocalImage[dev-proxy:latest<br/>Single platform]
-    Multi --> MultiImage[dev-proxy:latest<br/>Multi-platform]
+    Local --> LocalImage[dev-proxy:latest Single platform]
+    Multi --> MultiImage[dev-proxy:latest Multi-platform]
     Push --> Registry[Container Registry]
 
     Test[test.sh] -.->|uses| LocalImage
@@ -65,9 +65,9 @@ graph TB
 
 ```mermaid
 graph LR
-    Start([Run Script]) --> Detect[Detect Platform<br/>uname -m]
-    Detect --> Build[docker build<br/>--platform local]
-    Build --> Tag[Tag as<br/>dev-proxy:latest]
+    Start([Run Script]) --> Detect[Detect Platform uname -m]
+    Detect --> Build[docker build --platform local]
+    Build --> Tag[Tag as dev-proxy:latest]
     Tag --> Done([Image Ready])
 
     style Build fill:#4a9eff,stroke:#333,stroke-width:2px,color:#fff
@@ -98,22 +98,22 @@ export DO_REGISTRY=registry.digitalocean.com/your-registry
 
 ```mermaid
 graph TB
-    Start([Run Script]) --> Check{DO_REGISTRY<br/>set?}
+    Start([Run Script]) --> Check{DO_REGISTRY set?}
 
-    Check -->|No| Local[Local build<br/>--load]
-    Check -->|Yes| Registry[Registry build<br/>--push]
+    Check -->|No| Local[Local build --load]
+    Check -->|Yes| Registry[Registry build --push]
 
-    Local --> Buildx[docker buildx build<br/>--platform linux/arm64,linux/amd64]
+    Local --> Buildx[docker buildx build --platform linux/arm64,linux/amd64]
     Registry --> Buildx
 
-    Buildx --> ARM[Build<br/>linux/arm64]
-    Buildx --> AMD[Build<br/>linux/amd64]
+    Buildx --> ARM[Build linux/arm64]
+    Buildx --> AMD[Build linux/amd64]
 
-    ARM --> Manifest[Create<br/>Manifest]
+    ARM --> Manifest[Create Manifest]
     AMD --> Manifest
 
-    Local -.->|Note| LocalNote[Can only load<br/>current platform<br/>locally]
-    Registry --> Push[Push to<br/>Registry]
+    Local -.->|Note| LocalNote[Can only load current platform locally]
+    Registry --> Push[Push to Registry]
 
     Manifest --> Done([Complete])
     Push --> Done
@@ -178,7 +178,7 @@ sequenceDiagram
     Docker-->>Script: Push complete
     Script-->>User: Success message
 
-    Note over Script,Registry: Multi-arch manifest<br/>pushed automatically
+    Note over Script,Registry: Multi-arch manifest pushed automatically
 ```
 
 ### build-all.sh
@@ -206,30 +206,30 @@ export DO_TOKEN=dop_v1_abc123...
 
 ```mermaid
 graph TB
-    Start([build-all.sh]) --> Parse{Parse<br/>Arguments}
+    Start([build-all.sh]) --> Parse{Parse Arguments}
 
     Parse -->|--local-only| LocalOnly[Set LOCAL_ONLY=true]
-    Parse -->|No flag| CheckRegistry{DO_REGISTRY<br/>set?}
+    Parse -->|No flag| CheckRegistry{DO_REGISTRY set?}
 
     CheckRegistry -->|No| LocalOnly
-    CheckRegistry -->|Yes| ValidateVars[Validate<br/>DO_TOKEN]
+    CheckRegistry -->|Yes| ValidateVars[Validate DO_TOKEN]
 
-    LocalOnly --> Step1[Step 1:<br/>build-local.sh]
+    LocalOnly --> Step1[Step 1: build-local.sh]
     ValidateVars --> Step1
 
     Step1 --> Step1Check{Success?}
-    Step1Check -->|No| Error1[ERROR:<br/>Local build failed]
-    Step1Check -->|Yes| Step2[Step 2:<br/>build-multiarch.sh]
+    Step1Check -->|No| Error1[ERROR: Local build failed]
+    Step1Check -->|Yes| Step2[Step 2: build-multiarch.sh]
 
     Step2 --> Step2Check{Success?}
-    Step2Check -->|No| Error2[ERROR:<br/>Multi-arch build failed]
-    Step2Check -->|Yes| CheckPush{Push to<br/>registry?}
+    Step2Check -->|No| Error2[ERROR: Multi-arch build failed]
+    Step2Check -->|Yes| CheckPush{Push to registry?}
 
     CheckPush -->|LOCAL_ONLY=true| Success
-    CheckPush -->|No| Step3[Step 3:<br/>push-to-registry.sh]
+    CheckPush -->|No| Step3[Step 3: push-to-registry.sh]
 
     Step3 --> Step3Check{Success?}
-    Step3Check -->|No| Error3[ERROR:<br/>Push failed]
+    Step3Check -->|No| Error3[ERROR: Push failed]
     Step3Check -->|Yes| Success([Complete])
 
     style Error1 fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
@@ -261,17 +261,17 @@ graph TB
     Start([test.sh]) --> Setup[Setup Phase]
 
     Setup --> CreateNetwork[Create test network]
-    CreateNetwork --> StartBackend[Start mock backend<br/>nginx on :3001]
-    StartBackend --> StartFrontend[Start mock frontend<br/>nginx on :3000]
-    StartFrontend --> StartProxy[Start dev-proxy<br/>on :8081]
+    CreateNetwork --> StartBackend[Start mock backend nginx on :3001]
+    StartBackend --> StartFrontend[Start mock frontend nginx on :3000]
+    StartFrontend --> StartProxy[Start dev-proxy on :8081]
 
-    StartProxy --> WaitHealthy[Wait for<br/>health checks]
+    StartProxy --> WaitHealthy[Wait for health checks]
 
-    WaitHealthy --> Test1[Test 1:<br/>Health endpoint]
-    Test1 --> Test2[Test 2:<br/>Frontend routing]
-    Test2 --> Test3[Test 3:<br/>API routing]
-    Test3 --> Test4[Test 4:<br/>Security headers]
-    Test4 --> Test5[Test 5:<br/>Environment vars]
+    WaitHealthy --> Test1[Test 1: Health endpoint]
+    Test1 --> Test2[Test 2: Frontend routing]
+    Test2 --> Test3[Test 3: API routing]
+    Test3 --> Test4[Test 4: Security headers]
+    Test4 --> Test5[Test 5: Environment vars]
 
     Test5 --> Cleanup[Cleanup Phase]
 
@@ -280,7 +280,7 @@ graph TB
     StopFrontend --> StopBackend[Stop backend]
     StopBackend --> RemoveNetwork[Remove test network]
 
-    RemoveNetwork --> Report{All tests<br/>passed?}
+    RemoveNetwork --> Report{All tests passed?}
     Report -->|Yes| Success([SUCCESS])
     Report -->|No| Failure([FAILURE])
 
@@ -296,15 +296,15 @@ graph TB
 graph LR
     Edit[Edit Code] --> Build[./scripts/build-local.sh]
     Build --> Test[./scripts/test.sh]
-    Test --> Verify{Tests<br/>Pass?}
+    Test --> Verify{Tests Pass?}
 
     Verify -->|No| Debug[Debug Issues]
-    Verify -->|Yes| Deploy[Deploy Locally<br/>docker compose up]
+    Verify -->|Yes| Deploy[Deploy Locally docker compose up]
 
     Debug --> Edit
 
     Deploy --> UseApp[Use Application]
-    UseApp --> MoreChanges{More<br/>Changes?}
+    UseApp --> MoreChanges{More Changes?}
 
     MoreChanges -->|Yes| Edit
     MoreChanges -->|No| Done([Done])
@@ -338,21 +338,21 @@ docker compose exec dev-proxy nginx -s reload
 ```mermaid
 graph TB
     subgraph "Build Machine"
-        Buildx[Docker Buildx<br/>Builder]
+        Buildx[Docker Buildx Builder]
     end
 
     subgraph "Target Platforms"
-        ARM[linux/arm64<br/>Apple Silicon<br/>M1/M2/M3]
-        AMD[linux/amd64<br/>Intel/AMD<br/>x86_64]
+        ARM[linux/arm64 Apple Silicon M1/M2/M3]
+        AMD[linux/amd64 Intel/AMD x86_64]
     end
 
     Buildx --> ARM
     Buildx --> AMD
 
-    ARM --> ARMLayers[Nginx Binary<br/>arm64]
-    AMD --> AMDLayers[Nginx Binary<br/>amd64]
+    ARM --> ARMLayers[Nginx Binary arm64]
+    AMD --> AMDLayers[Nginx Binary amd64]
 
-    ARMLayers --> Manifest[Multi-Arch<br/>Manifest]
+    ARMLayers --> Manifest[Multi-Arch Manifest]
     AMDLayers --> Manifest
 
     style Buildx fill:#4a9eff,stroke:#333,stroke-width:2px,color:#fff
@@ -426,13 +426,13 @@ Dev Proxy can push to any Docker-compatible registry:
 
 ```mermaid
 graph TB
-    Image[dev-proxy:latest<br/>Multi-arch]
+    Image[dev-proxy:latest Multi-arch]
 
-    Image --> DO[Digital Ocean<br/>Container Registry]
+    Image --> DO[Digital Ocean Container Registry]
     Image --> DockerHub[Docker Hub]
-    Image --> GCR[Google Container<br/>Registry]
+    Image --> GCR[Google Container Registry]
     Image --> ECR[AWS ECR]
-    Image --> GHCR[GitHub Container<br/>Registry]
+    Image --> GHCR[GitHub Container Registry]
 
     style Image fill:#4a9eff,stroke:#333,stroke-width:2px,color:#fff
 ```
@@ -441,23 +441,23 @@ graph TB
 
 ```mermaid
 graph TB
-    Start([Push Script]) --> Auth[Authenticate<br/>docker login]
+    Start([Push Script]) --> Auth[Authenticate docker login]
 
-    Auth --> CheckImage{Image<br/>exists?}
-    CheckImage -->|No| Error1[ERROR:<br/>Build image first]
-    CheckImage -->|Yes| Tag[Tag image<br/>registry/name:tag]
+    Auth --> CheckImage{Image exists?}
+    CheckImage -->|No| Error1[ERROR: Build image first]
+    CheckImage -->|Yes| Tag[Tag image registry/name:tag]
 
     Tag --> Push[docker push]
 
     Push --> Layers[Upload Layers]
 
-    Layers --> Layer1[Push base layer<br/>nginx:alpine]
+    Layers --> Layer1[Push base layer nginx:alpine]
     Layers --> Layer2[Push curl layer]
     Layers --> Layer3[Push config layer]
 
-    Layer1 --> CheckCache1{Layer in<br/>registry?}
-    Layer2 --> CheckCache2{Layer in<br/>registry?}
-    Layer3 --> CheckCache3{Layer in<br/>registry?}
+    Layer1 --> CheckCache1{Layer in registry?}
+    Layer2 --> CheckCache2{Layer in registry?}
+    Layer3 --> CheckCache3{Layer in registry?}
 
     CheckCache1 -->|Yes| Skip1[Skip: Layer exists]
     CheckCache1 -->|No| Upload1[Upload layer]
@@ -475,7 +475,7 @@ graph TB
     Skip3 --> Manifest
     Upload3 --> Manifest
 
-    Manifest[Push manifest<br/>with platform info]
+    Manifest[Push manifest with platform info]
 
     Manifest --> Done([Push Complete])
 
@@ -522,9 +522,9 @@ export TAG=latest
 ```mermaid
 graph TB
     subgraph "Test Network: dev-proxy-test-network"
-        Proxy[dev-proxy<br/>:8081]
-        Backend[mock-backend<br/>nginx:alpine<br/>:3001]
-        Frontend[mock-frontend<br/>nginx:alpine<br/>:3000]
+        Proxy[dev-proxy :8081]
+        Backend[mock-backend nginx:alpine :3001]
+        Frontend[mock-frontend nginx:alpine :3000]
 
         Proxy -->|/api/*| Backend
         Proxy -->|/*| Frontend
@@ -606,22 +606,22 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    Start([Run Tests]) --> T1{Health Check<br/>/health}
+    Start([Run Tests]) --> T1{Health Check /health}
 
-    T1 -->|Pass| T2{Frontend<br/>/ → frontend}
-    T1 -->|Fail| F1[FAIL:<br/>Proxy not healthy]
+    T1 -->|Pass| T2{Frontend / → frontend}
+    T1 -->|Fail| F1[FAIL: Proxy not healthy]
 
-    T2 -->|Pass| T3{API Routing<br/>/api/* → backend}
-    T2 -->|Fail| F2[FAIL:<br/>Frontend routing broken]
+    T2 -->|Pass| T3{API Routing /api/* → backend}
+    T2 -->|Fail| F2[FAIL: Frontend routing broken]
 
-    T3 -->|Pass| T4{Security Headers<br/>Present?}
-    T3 -->|Fail| F3[FAIL:<br/>API routing broken]
+    T3 -->|Pass| T4{Security Headers Present?}
+    T3 -->|Fail| F3[FAIL: API routing broken]
 
-    T4 -->|Pass| T5{Environment<br/>Variables OK?}
-    T4 -->|Fail| F4[FAIL:<br/>Security headers missing]
+    T4 -->|Pass| T5{Environment Variables OK?}
+    T4 -->|Fail| F4[FAIL: Security headers missing]
 
     T5 -->|Pass| Success([ALL TESTS PASSED])
-    T5 -->|Fail| F5[FAIL:<br/>Config error]
+    T5 -->|Fail| F5[FAIL: Config error]
 
     style Success fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff
     style F1 fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
@@ -641,33 +641,33 @@ graph TB
     Code --> LocalBuild[./scripts/build-local.sh]
     LocalBuild --> LocalTest[./scripts/test.sh]
 
-    LocalTest --> TestPass{Tests<br/>Pass?}
+    LocalTest --> TestPass{Tests Pass?}
     TestPass -->|No| Debug[Debug & Fix]
     Debug --> Code
 
     TestPass -->|Yes| Commit[Git Commit]
     Commit --> MultiArch[./scripts/build-multiarch.sh]
 
-    MultiArch --> BuildPass{Build<br/>Success?}
+    MultiArch --> BuildPass{Build Success?}
     BuildPass -->|No| Debug
     BuildPass -->|Yes| Push[./scripts/push-to-registry.sh]
 
-    Push --> PushPass{Push<br/>Success?}
+    Push --> PushPass{Push Success?}
     PushPass -->|No| CheckCreds[Check Credentials]
     CheckCreds --> Push
 
     PushPass -->|Yes| Registry[Image in Registry]
     Registry --> Deploy[Deploy to Environments]
 
-    Deploy --> DevEnv[Development<br/>Environment]
-    Deploy --> StagingEnv[Staging<br/>Environment]
-    Deploy --> ProdEnv[Production<br/>Environment]
+    Deploy --> DevEnv[Development Environment]
+    Deploy --> StagingEnv[Staging Environment]
+    Deploy --> ProdEnv[Production Environment]
 
     DevEnv --> Monitor[Monitor & Verify]
     StagingEnv --> Monitor
     ProdEnv --> Monitor
 
-    Monitor --> Issues{Issues<br/>Found?}
+    Monitor --> Issues{Issues Found?}
     Issues -->|Yes| Hotfix[Create Hotfix]
     Issues -->|No| Done([Deployment Complete])
 
@@ -687,7 +687,7 @@ graph LR
     Build --> Test[Run Tests]
     Test --> Scan[Security Scan]
 
-    Scan --> Branch{Which<br/>Branch?}
+    Scan --> Branch{Which Branch?}
 
     Branch -->|develop| TagDev[Tag: dev-latest]
     Branch -->|main| TagProd[Tag: latest]

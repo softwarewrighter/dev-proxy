@@ -20,11 +20,11 @@ Dev Proxy is configured entirely through environment variables, allowing the sam
 ```mermaid
 graph LR
     EnvFile[.env File] --> Compose[docker-compose.yml]
-    Compose --> Container[Container<br/>Environment]
-    Container --> Entrypoint[Nginx<br/>Entrypoint]
+    Compose --> Container[Container Environment]
+    Container --> Entrypoint[Nginx Entrypoint]
     Template[nginx.conf.template] --> Entrypoint
-    Entrypoint --> Envsubst[envsubst<br/>Processing]
-    Envsubst --> Final[Final Config<br/>/etc/nginx/conf.d/]
+    Entrypoint --> Envsubst[envsubst Processing]
+    Envsubst --> Final[Final Config /etc/nginx/conf.d/]
 
     style EnvFile fill:#ffa94d,stroke:#333,stroke-width:2px
     style Final fill:#51cf66,stroke:#333,stroke-width:2px,color:#fff
@@ -50,22 +50,22 @@ graph LR
 
 ```mermaid
 graph TD
-    Start([Load .env]) --> CheckNetwork{APP_NETWORK<br/>set?}
-    CheckNetwork -->|No| UseDefault1[Use default:<br/>app-network]
-    CheckNetwork -->|Yes| ValidateNetwork[Validate network<br/>exists]
+    Start([Load .env]) --> CheckNetwork{APP_NETWORK set?}
+    CheckNetwork -->|No| UseDefault1[Use default: app-network]
+    CheckNetwork -->|Yes| ValidateNetwork[Validate network exists]
 
-    ValidateNetwork --> NetworkOK{Network<br/>exists?}
-    NetworkOK -->|No| Error1[ERROR:<br/>Network not found]
-    NetworkOK -->|Yes| CheckBackend{APP_BACKEND_HOST<br/>set?}
+    ValidateNetwork --> NetworkOK{Network exists?}
+    NetworkOK -->|No| Error1[ERROR: Network not found]
+    NetworkOK -->|Yes| CheckBackend{APP_BACKEND_HOST set?}
 
     UseDefault1 --> CheckBackend
 
-    CheckBackend -->|No| UseDefault2[Use default:<br/>app-backend]
-    CheckBackend -->|Yes| CheckFrontend{APP_FRONTEND_HOST<br/>set?}
+    CheckBackend -->|No| UseDefault2[Use default: app-backend]
+    CheckBackend -->|Yes| CheckFrontend{APP_FRONTEND_HOST set?}
 
     UseDefault2 --> CheckFrontend
 
-    CheckFrontend -->|No| UseDefault3[Use default:<br/>app-frontend]
+    CheckFrontend -->|No| UseDefault3[Use default: app-frontend]
     CheckFrontend -->|Yes| Success([Start container])
 
     UseDefault3 --> Success
@@ -275,9 +275,9 @@ See [Security](Security) for details on each header.
 
 ```mermaid
 graph TD
-    Request[Incoming Request] --> Exact{Exact match?<br/>/health}
+    Request[Incoming Request] --> Exact{Exact match? /health}
     Exact -->|Yes| HealthBlock[location /health]
-    Exact -->|No| Prefix{Prefix match?<br/>/api/}
+    Exact -->|No| Prefix{Prefix match? /api/}
     Prefix -->|Yes| APIBlock[location /api/]
     Prefix -->|No| Default[location /]
 
@@ -452,12 +452,12 @@ docker compose restart
 
 ```mermaid
 graph TD
-    Start([Select App]) --> Copy[Copy .env.APPNAME<br/>to .env]
-    Copy --> Start1[Start app's<br/>docker compose]
-    Start1 --> Wait[Wait for app<br/>to be healthy]
+    Start([Select App]) --> Copy[Copy .env.APPNAME to .env]
+    Copy --> Start1[Start app's docker compose]
+    Start1 --> Wait[Wait for app to be healthy]
     Wait --> StartProxy[Start dev-proxy]
-    StartProxy --> Check{Health check<br/>pass?}
-    Check -->|No| Debug[Debug:<br/>Check network,<br/>service names]
+    StartProxy --> Check{Health check pass?}
+    Check -->|No| Debug[Debug: Check network, service names]
     Check -->|Yes| Ready([Ready to use])
 
     Debug --> StartProxy

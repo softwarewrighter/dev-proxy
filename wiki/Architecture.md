@@ -31,16 +31,16 @@ graph TB
         Docker[Docker Engine]
 
         subgraph "Dev Proxy Container"
-            Nginx[Nginx Server<br/>:8080]
+            Nginx[Nginx Server :8080]
             Config[nginx.conf]
-            Health[Health Check<br/>/health]
+            Health[Health Check /health]
             Nginx --> Config
             Nginx --> Health
         end
 
         subgraph "App Network"
-            Backend[Backend Service<br/>:3001]
-            Frontend[Frontend Service<br/>:3000]
+            Backend[Backend Service :3001]
+            Frontend[Frontend Service :3000]
             Database[(Database)]
             Cache[(Redis/Cache)]
         end
@@ -50,7 +50,7 @@ graph TB
         Nginx -->|/*| Frontend
         Backend --> Database
         Backend --> Cache
-        Frontend -.->|Development<br/>HMR| Browser
+        Frontend -.->|Development HMR| Browser
 
         Docker --> Nginx
         Docker --> Backend
@@ -73,17 +73,17 @@ The core component is nginx running in Alpine Linux.
 graph LR
     subgraph "Nginx Container"
         direction TB
-        Master["Nginx Master<br/>Process<br/>PID 1"]
-        Worker1["Worker Process<br/>nginx user"]
-        Worker2["Worker Process<br/>nginx user"]
+        Master["Nginx Master Process PID 1"]
+        Worker1["Worker Process nginx user"]
+        Worker2["Worker Process nginx user"]
 
         Master --> Worker1
         Master --> Worker2
 
         subgraph "Configuration"
             Template["nginx.conf.template"]
-            Env["Environment<br/>Variables"]
-            Final["Final Config<br/>/etc/nginx/conf.d/default.conf"]
+            Env["Environment Variables"]
+            Final["Final Config /etc/nginx/conf.d/default.conf"]
 
             Template --> Final
             Env --> Final
@@ -114,9 +114,9 @@ Request routing is based on URL path patterns.
 graph TD
     Request[Incoming Request] --> Router{Path Match}
 
-    Router -->|/health| HealthHandler[Health Handler<br/>Return 200 OK]
-    Router -->|/api/*| APIProxy[API Proxy<br/>→ Backend]
-    Router -->|/* other| FrontendProxy[Frontend Proxy<br/>→ Frontend]
+    Router -->|/health| HealthHandler[Health Handler Return 200 OK]
+    Router -->|/api/*| APIProxy[API Proxy → Backend]
+    Router -->|/* other| FrontendProxy[Frontend Proxy → Frontend]
 
     APIProxy --> Backend[app-backend:3001]
     FrontendProxy --> Frontend[app-frontend:3000]
@@ -144,14 +144,14 @@ graph LR
 
     subgraph "Runtime"
         EnvFile[.env File]
-        EnvVars[Environment<br/>Variables]
+        EnvVars[Environment Variables]
         Compose[docker-compose.yml]
     end
 
     subgraph "Container Startup"
         Entrypoint[Nginx Entrypoint]
-        Envsubst[envsubst<br/>Template Processing]
-        FinalConfig[Final Config<br/>/etc/nginx/conf.d/]
+        Envsubst[envsubst Template Processing]
+        FinalConfig[Final Config /etc/nginx/conf.d/]
     end
 
     Dockerfile --> Template
@@ -176,10 +176,10 @@ graph TB
         HostPort[localhost:8080]
 
         subgraph "App Docker Network"
-            Proxy[dev-proxy<br/>:8080]
-            Backend[app-backend<br/>:3001]
-            Frontend[app-frontend<br/>:3000]
-            DB[(Database<br/>:5432)]
+            Proxy[dev-proxy :8080]
+            Backend[app-backend :3001]
+            Frontend[app-frontend :3000]
+            DB[(Database :5432)]
 
             Proxy -.->|internal| Backend
             Proxy -.->|internal| Frontend
@@ -256,16 +256,16 @@ graph TB
 graph TB
     Source[Source Code] --> Builder[Docker Buildx]
 
-    Builder --> ARM[linux/arm64<br/>Mac M1/M2/M3]
-    Builder --> AMD[linux/amd64<br/>Linux/Intel Mac]
+    Builder --> ARM[linux/arm64 Mac M1/M2/M3]
+    Builder --> AMD[linux/amd64 Linux/Intel Mac]
 
-    ARM --> Manifest[Multi-arch<br/>Manifest]
+    ARM --> Manifest[Multi-arch Manifest]
     AMD --> Manifest
 
-    Manifest --> Registry[Container<br/>Registry]
+    Manifest --> Registry[Container Registry]
 
-    Registry --> MacPull[Mac Pull<br/>→ arm64]
-    Registry --> LinuxPull[Linux Pull<br/>→ amd64]
+    Registry --> MacPull[Mac Pull → arm64]
+    Registry --> LinuxPull[Linux Pull → amd64]
 
     style Builder fill:#ffa94d,stroke:#333,stroke-width:2px
     style Manifest fill:#4a9eff,stroke:#333,stroke-width:2px,color:#fff
@@ -276,10 +276,10 @@ graph TB
 ```mermaid
 graph TB
     subgraph "Container Runtime"
-        Init[Container Init<br/>PID 1] --> NginxMaster[Nginx Master<br/>root user]
+        Init[Container Init PID 1] --> NginxMaster[Nginx Master root user]
 
-        NginxMaster --> Worker1[Worker 1<br/>nginx user]
-        NginxMaster --> Worker2[Worker 2<br/>nginx user]
+        NginxMaster --> Worker1[Worker 1 nginx user]
+        NginxMaster --> Worker2[Worker 2 nginx user]
 
         subgraph "Filesystem"
             Conf[/etc/nginx/]
@@ -296,7 +296,7 @@ graph TB
         Worker2 --> Cache
     end
 
-    HealthCheck[Docker<br/>Health Check] -.->|curl localhost:8080/health| Worker1
+    HealthCheck[Docker Health Check] -.->|curl localhost:8080/health| Worker1
 
     style NginxMaster fill:#ff6b6b,stroke:#333,stroke-width:2px,color:#fff
     style Worker1 fill:#4a9eff,stroke:#333,stroke-width:2px,color:#fff

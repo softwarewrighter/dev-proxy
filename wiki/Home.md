@@ -50,8 +50,8 @@ docker compose up -d
 ```mermaid
 graph LR
     User[User Browser] -->|http://localhost:8080| Proxy[Dev Proxy]
-    Proxy -->|/api/*| Backend[App Backend<br/>:3001]
-    Proxy -->|/*| Frontend[App Frontend<br/>:3000]
+    Proxy -->|/api/*| Backend[App Backend :3001]
+    Proxy -->|/*| Frontend[App Frontend :3000]
 
     style Proxy fill:#4a9eff,stroke:#333,stroke-width:2px,color:#fff
     style Backend fill:#68c468,stroke:#333,stroke-width:2px,color:#fff
