@@ -338,11 +338,13 @@ sequenceDiagram
     Browser->>Proxy: GET /page
 
     Proxy->>App: GET /page
-    App-->>Proxy: 200 OK<br/>Content-Type: text/html<br/>&lt;html&gt;...&lt;/html&gt;
+    App-->>Proxy: 200 OK
+    Note over App,Proxy: Content-Type: text/html
 
     Note over Proxy: Add security headers
 
-    Proxy-->>Browser: 200 OK<br/>X-Frame-Options: SAMEORIGIN<br/>X-Content-Type-Options: nosniff<br/>X-XSS-Protection: 1; mode=block<br/>Referrer-Policy: strict-origin-when-cross-origin<br/>&lt;html&gt;...&lt;/html&gt;
+    Proxy-->>Browser: 200 OK
+    Note over Proxy,Browser: X-Frame-Options: SAMEORIGIN<br/>X-Content-Type-Options: nosniff<br/>X-XSS-Protection: 1; mode=block<br/>Referrer-Policy: strict-origin-when-cross-origin
 
     Note over Browser: Apply security policies
 ```
@@ -552,7 +554,8 @@ sequenceDiagram
 
     Dev->>Script: Run with DO_TOKEN
 
-    Script->>Docker: docker login<br/>--password-stdin
+    Script->>Docker: docker login
+    Note over Script,Docker: --password-stdin
 
     Docker->>Registry: Authenticate
     Registry-->>Docker: ✓ Token valid

@@ -157,16 +157,20 @@ sequenceDiagram
     participant Registry
 
     User->>Script: Run script
-    Script->>Script: Validate environment<br/>DO_REGISTRY, DO_TOKEN
+    Script->>Script: Validate environment
+    Note over Script: DO_REGISTRY, DO_TOKEN
 
-    Script->>Docker: docker login<br/>using DO_TOKEN
+    Script->>Docker: docker login
+    Note over Script,Docker: using DO_TOKEN
 
     Docker->>Registry: Authenticate
     Registry-->>Docker: Success
 
-    Script->>Docker: docker tag<br/>dev-proxy:latest → registry/dev-proxy:TAG
+    Script->>Docker: docker tag
+    Note over Script,Docker: dev-proxy:latest → registry/dev-proxy:TAG
 
-    Script->>Docker: docker push<br/>registry/dev-proxy:TAG
+    Script->>Docker: docker push
+    Note over Script,Docker: registry/dev-proxy:TAG
 
     Docker->>Registry: Upload layers
     Registry-->>Docker: Success
@@ -376,31 +380,39 @@ sequenceDiagram
     participant AMD as AMD64 Builder
     participant Registry
 
-    Dev->>Buildx: docker buildx build<br/>--platform linux/arm64,linux/amd64
+    Dev->>Buildx: docker buildx build
+    Note over Dev,Buildx: --platform linux/arm64,linux/amd64
 
     par Parallel Builds
         Buildx->>ARM: Build arm64 image
         Buildx->>AMD: Build amd64 image
     end
 
-    ARM->>ARM: FROM nginx:alpine<br/>(arm64 variant)
-    AMD->>AMD: FROM nginx:alpine<br/>(amd64 variant)
+    ARM->>ARM: FROM nginx:alpine
+    Note over ARM: arm64 variant
 
-    ARM->>ARM: COPY files<br/>RUN apk add
+    AMD->>AMD: FROM nginx:alpine
+    Note over AMD: amd64 variant
 
-    AMD->>AMD: COPY files<br/>RUN apk add
+    ARM->>ARM: COPY files
+    Note over ARM: RUN apk add
+
+    AMD->>AMD: COPY files
+    Note over AMD: RUN apk add
 
     ARM-->>Buildx: arm64 image ready
     AMD-->>Buildx: amd64 image ready
 
-    Buildx->>Buildx: Create manifest<br/>combining both images
+    Buildx->>Buildx: Create manifest
+    Note over Buildx: combining both images
 
     alt Push to Registry
         Buildx->>Registry: Push manifest
         Buildx->>Registry: Push arm64 layers
         Buildx->>Registry: Push amd64 layers
     else Load Locally
-        Buildx->>Buildx: Load current platform<br/>to local Docker
+        Buildx->>Buildx: Load current platform
+        Note over Buildx: to local Docker
     end
 
     Buildx-->>Dev: Build complete
@@ -538,9 +550,14 @@ sequenceDiagram
 
     Script->>Script: Create test network
 
-    Script->>Backend: Start container<br/>Serve "backend" on :3001
-    Script->>Frontend: Start container<br/>Serve "frontend" on :3000
-    Script->>Proxy: Start container<br/>Connect to test network
+    Script->>Backend: Start container
+    Note over Backend: Serve "backend" on :3001
+
+    Script->>Frontend: Start container
+    Note over Frontend: Serve "frontend" on :3000
+
+    Script->>Proxy: Start container
+    Note over Proxy: Connect to test network
 
     Script->>Proxy: Wait for health check
     Proxy-->>Script: Healthy
@@ -567,11 +584,13 @@ sequenceDiagram
     Note over Script,Proxy: Test 4: Security Headers
 
     Script->>Proxy: GET / (check headers)
-    Proxy-->>Script: Headers include<br/>X-Frame-Options, etc.
+    Proxy-->>Script: Headers include
+    Note over Proxy,Script: X-Frame-Options, etc.
 
     Note over Script,Proxy: Test 5: Environment Variables
 
-    Script->>Proxy: Verify config<br/>contains correct hosts
+    Script->>Proxy: Verify config
+    Note over Proxy: contains correct hosts
 
     Script->>Script: All tests passed!
 
